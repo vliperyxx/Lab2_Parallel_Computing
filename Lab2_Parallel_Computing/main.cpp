@@ -62,6 +62,44 @@ public:
         maxValue = synchronizedMaxValue;
     }
 
+    static void threadFuncAtomic(const int arr[], int size, int threadId) {
+        for (int i = threadId; i < size; i += threads_num) {
+            if (arr[i] > 20) {
+                int oldCount = atomicCount.load();
+                int newCount;
+
+                do {
+                    newCount = oldCount + 1;
+                } while (!atomicCount.compare_exchange_weak(oldCount, newCount));
+
+                int currentMax = atomicMax.load();
+
+                while (arr[i] > currentMax) {
+                    if (atomicMax.compare_exchange_weak(currentMax, arr[i])) {
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    static void findCountAndMaxAtomic(const int arr[], int size, int& count, int& maxValue) {
+        atomicCount = 0;
+        atomicMax = INT_MIN;
+        std::thread threads[threads_num];
+
+        for (int t = 0; t < threads_num; t++) {
+            threads[t] = std::thread(threadFuncAtomic, arr, size, t);
+        }
+
+        for (int t = 0; t < threads_num; t++) {
+            threads[t].join();
+        }
+
+        count = atomicCount.load();
+        maxValue = atomicMax.load();
+    }
+
     static void printArray(const int arr[], int size) {
         for (int i = 0; i < size; i++) {
             std::cout << arr[i] << " ";
@@ -69,10 +107,14 @@ public:
         std::cout << "\n\n";
     }
 
+
 private:
     static int synchronizedCount;
     static int synchronizedMaxValue;
     static std::mutex m;
+
+    static std::atomic<int> atomicCount;
+    static std::atomic<int> atomicMax;
 };
 
 int main() {
