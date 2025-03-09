@@ -149,6 +149,18 @@ int main() {
     std::cout << "Count of elements > 20: " << count << "\n";
     std::cout << "Maximum element > 20: " << maxValue << "\n";
 
+    int countSync, maxSync;
+
+    auto startSync = std::chrono::high_resolution_clock::now();
+    ArrayOperations::findCountAndMaxSynchronized(array, size, countSync, maxSync);
+    auto endSync = std::chrono::high_resolution_clock::now();
+
+    double durationSync = std::chrono::duration<double, std::milli>(endSync - startSync).count();
+
+    std::cout << "\nSynchronized execution time (" << threads_num << " threads): " << durationSync << " ms\n";
+    std::cout << "Count of elements > 20: " << countSync << "\n";
+    std::cout << "Maximum element > 20: " << maxSync << "\n\n";
+
     delete[] array;
     return 0;
 }
