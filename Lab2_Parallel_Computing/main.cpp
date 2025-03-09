@@ -117,6 +117,12 @@ private:
     static std::atomic<int> atomicMax;
 };
 
+int ArrayOperations::synchronizedCount = 0;
+int ArrayOperations::synchronizedMaxValue = INT_MIN;
+std::mutex ArrayOperations::m;
+std::atomic<int> ArrayOperations::atomicCount = 0;
+std::atomic<int> ArrayOperations::atomicMax = INT_MIN;
+
 int main() {
     int size;
     std::cout << "Enter size of array: ";
