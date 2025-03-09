@@ -49,6 +49,18 @@ int main() {
         ArrayOperations::printArray(array, size);
     }
 
+    int count, maxValue;
+
+    auto startSingleThread = std::chrono::high_resolution_clock::now();
+    ArrayOperations::findCountAndMaxGreaterThan20(array, size, count, maxValue);
+    auto endSingleThread = std::chrono::high_resolution_clock::now();
+
+    double durationSingleThread = std::chrono::duration<double, std::milli>(endSingleThread - startSingleThread).count();
+
+    std::cout << "\nSingle-thread execution time: " << durationSingleThread << " ms\n";
+    std::cout << "Count of elements > 20: " << count << "\n";
+    std::cout << "Maximum element > 20: " << maxValue << "\n";
+
     delete[] array;
     return 0;
 }
