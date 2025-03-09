@@ -26,6 +26,13 @@ public:
             }
         }
     }
+
+    static void printArray(const int arr[], int size) {
+        for (int i = 0; i < size; i++) {
+            std::cout << arr[i] << " ";
+        }
+        std::cout << "\n\n";
+    }
 };
 
 int main() {
@@ -36,6 +43,11 @@ int main() {
     int* array = new int[size];
 
     ArrayOperations::fillArray(array, size);
+
+    if (size <= 100) {
+        std::cout << "Array: ";
+        ArrayOperations::printArray(array, size);
+    }
 
     delete[] array;
     return 0;
