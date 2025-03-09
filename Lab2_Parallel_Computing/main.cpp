@@ -3,6 +3,10 @@
 #include <cstdlib>    
 #include <thread>   
 #include <mutex> 
+#include <ctime>     
+#include <climits>   
+
+const int threads_num = 8;
 
 class ArrayOperations {
 public:
@@ -27,12 +31,48 @@ public:
         }
     }
 
+    static void threadFuncSynchronized(const int arr[], int size, int threadId) {
+        for (int i = threadId; i < size; i += threads_num) {
+            if (arr[i] > 20) {
+                m.lock();
+                synchronizedCount++;
+
+                if (arr[i] > synchronizedMaxValue) {
+                    synchronizedMaxValue = arr[i];
+                }
+                m.unlock();
+            }
+        }
+    }
+
+    static void findCountAndMaxSynchronized(const int arr[], int size, int& count, int& maxValue) {
+        synchronizedCount = 0;
+        synchronizedMaxValue = INT_MIN;
+        std::thread threads[threads_num];
+
+        for (int t = 0; t < threads_num; t++) {
+            threads[t] = std::thread(threadFuncSynchronized, arr, size, t);
+        }
+
+        for (int t = 0; t < threads_num; t++) {
+            threads[t].join();
+        }
+
+        count = synchronizedCount;
+        maxValue = synchronizedMaxValue;
+    }
+
     static void printArray(const int arr[], int size) {
         for (int i = 0; i < size; i++) {
             std::cout << arr[i] << " ";
         }
         std::cout << "\n\n";
     }
+
+private:
+    static int synchronizedCount;
+    static int synchronizedMaxValue;
+    static std::mutex m;
 };
 
 int main() {
